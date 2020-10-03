@@ -5,21 +5,31 @@
          canvas {
              box-shadow: 5px 5px 25px black;
          }
-         html, body {
+         html, body, #container {
              padding: 0;
              margin: 0;
              width: 100%;
              height: 100%;
          }
-         body {
+         #container {
              display: flex;
              align-items: center;
              justify-content: center;
          }
+         #ticks {
+             font-family: monospace;
+             white-space: pre;
+             position: absolute;
+             top: 0;
+             left: 0;
+         }
         </style>
     </head>
     <body>
-        <canvas id="canvas" />
+        <div id="ticks"></div>
+        <div id="container">
+            <canvas id="canvas" />
+        </div>
         <script type="module">
          import init from './pkg/mcmc_maze_solver_web.js';
          init().catch(e => console.error(`Error initializing Wasm module: ${e}`));

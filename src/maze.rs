@@ -17,8 +17,6 @@ pub struct Maze {
 
 impl Maze {
     pub fn new(rng: &mut dyn RngCore, rows: u32, cols: u32) -> Maze {
-        log::debug!("Maze::new");
-
         assert!(rows > 0);
         assert!(cols > 0);
 
@@ -42,10 +40,8 @@ impl Maze {
         let mut stack = vec![start];
         let mut neighbors = Vec::with_capacity(4);
         while let Some(cell) = stack.last().cloned() {
-            log::debug!("  cell = {:?}", cell);
             neighbors.clear();
             neighbors.extend(maze.neighbors(cell).filter(|n| !seen.contains(n)));
-            log::debug!("    unseen neighbors = {:?}", neighbors);
             if let Some(neighbor) = neighbors.choose(rng).cloned() {
                 let cell_index = maze.index_for_cell(cell);
                 let neighbor_index = maze.index_for_cell(neighbor);
@@ -164,22 +160,39 @@ impl Maze {
     ) -> impl Iterator<Item = Cell> + 'a {
         let mut moves = path.moves.iter().cloned();
         let mut current = start;
-        iter::from_fn(move || {
-            if let Some(cell) = match moves.next()? {
-                Some(Move::North) => self.north(current),
-                Some(Move::East) => self.east(current),
-                Some(Move::South) => self.south(current),
-                Some(Move::West) => self.west(current),
-                None => None,
-            } {
+        iter::from_fn(move || loop {
+            let cell = match moves.next()? {
+                Some(Move::North) => match self.north(current) {
+                    Some(n) => n,
+                    None => continue,
+                },
+                Some(Move::East) => match self.east(current) {
+                    Some(e) => e,
+                    None => continue,
+                },
+                Some(Move::South) => match self.south(current) {
+                    Some(s) => s,
+                    None => continue,
+                },
+                Some(Move::West) => match self.west(current) {
+                    Some(w) => w,
+                    None => continue,
+                },
+                None => continue,
+            };
+            if self.is_edge_between(current, cell) {
                 current = cell;
+                return Some(current);
+            } else {
+                continue;
             }
-            Some(current)
         })
     }
 
     pub fn bird_flight_distance(&self, a: Cell, b: Cell) -> f64 {
-        unimplemented!()
+        let x = (a.col as f64) - (b.col as f64);
+        let y = (a.row as f64) - (b.row as f64);
+        (x.powf(2.0) + y.powf(2.0)).sqrt()
     }
 }
 

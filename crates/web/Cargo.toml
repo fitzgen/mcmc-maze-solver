@@ -12,6 +12,8 @@ crate-type = ["cdylib"]
 [dependencies]
 console_error_panic_hook = "0.1.6"
 console_log = "0.1.2"
+futures = "0.3"
+js-sys = "0.3.35"
 log = "0.4.8"
 mcmc-maze-solver = { path = "../.." }
 rand = { version = "0.7", features = ["small_rng"] }
@@ -25,5 +27,7 @@ features = [
     "Document",
     "Element",
     "HtmlCanvasElement",
+    "Node",
+    "Performance",
     "Window",
 ]
